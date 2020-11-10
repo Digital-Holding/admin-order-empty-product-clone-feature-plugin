@@ -4,5 +4,6 @@ services:
         arguments:
             - '@doctrine.orm.default_entity_manager'
             - '@request_stack'
+            - '@dh.factory.product.create_product_variant_factory'
         tags:
             - { name: "kernel.event_listener", event: "sylius.order.pre_admin_create", method: "processOrder" }
