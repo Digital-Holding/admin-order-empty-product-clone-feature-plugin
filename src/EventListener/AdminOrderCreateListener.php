@@ -60,9 +60,10 @@ class AdminOrderCreateListener
 
             $newVariant = $this->createProductVariantFactory->createBasedOnVariant($baseVariant->getProduct(), $baseVariant, $channel);
             $item->setVariant($newVariant);
-            // foreach ($baseVariant->getOptionAttributeValues() as $value) {
-            //     $baseVariant->removeOptionAttributeValue($value);
-            // }
+            $newVariant->setConfigurable(true);
+            foreach ($newVariant->getOptionAttributeValues() as $value) {
+                $newVariant->removeOptionAttributeValue($value);
+            }
         }
     }
 }
