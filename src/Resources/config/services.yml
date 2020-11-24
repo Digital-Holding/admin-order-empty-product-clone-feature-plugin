@@ -1,9 +1,10 @@
 services:
     dh.artis_order_empty_product_clone_feature_plugin.event_listener.admin_order_pre_create:
         class: DH\ArtisAdminOrderEmptyProductCloneFeaturePlugin\EventListener\AdminOrderCreateListener
+        public: true
         arguments:
             - '@doctrine.orm.default_entity_manager'
             - '@request_stack'
             - '@dh.factory.product.create_product_variant_factory'
-        tags:
-            - { name: "kernel.event_listener", event: "sylius.order.pre_admin_create", method: "processOrder" }
+        # tags:
+        #    - { name: "kernel.event_listener", event: "sylius.order.pre_admin_create", method: "processOrder" }

@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use FriendsOfSylius\SyliusImportExportPlugin\Exporter\Plugin\ResourcePlugin;
 use Sylius\Bundle\ResourceBundle\Event\ResourceControllerEvent;
+use Sylius\Component\Core\Model\OrderInterface as ModelOrderInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface as ModelProductVariantInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
@@ -41,13 +42,11 @@ class AdminOrderCreateListener
         $this->createProductVariantFactory = $createProductVariantFactory;
     }
 
-    public function processOrder(ResourceControllerEvent $event)
+    public function processOrder(OrderInterface $order)
     {
-        /** @var OrderInterface */
-        $subject = $event->getSubject();
-
-        $items = $subject->getItems();
-        $channel = $subject->getChannel();
+        $items = $order->getItems();
+        $channel = $order->getChannel();
+        
 
         /** @var OrderItemInterface */
         foreach ($items as $item) {
@@ -58,12 +57,16 @@ class AdminOrderCreateListener
                 continue;
             }
 
-            $newVariant = $this->createProductVariantFactory->createBasedOnVariant($baseVariant->getProduct(), $baseVariant, $channel);
-            $item->setVariant($newVariant);
-            $newVariant->setConfigurable(true);
-            foreach ($newVariant->getOptionAttributeValues() as $value) {
-                $newVariant->removeOptionAttributeValue($value);
+            if (null !== $baseVariant->getParentVariantCode()) {
+                continue;
             }
+
+            $newVariant = $this->createProductVariantFactory->createBasedOnVariant($baseVariant->getProduct(), $baseVariant, $channel);
+            $newVariant->setConfigurable(true);
+            foreach ($newVariant->getOptionValues() as $value) {
+                $newVariant->removeOptionValue($value);
+            }
+            $item->setVariant($newVariant);
         }
     }
 }
