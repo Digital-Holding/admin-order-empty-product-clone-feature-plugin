@@ -1,0 +1,9 @@
+
+winzou_state_machine:
+  sylius_order:
+    callbacks:
+      before:
+        artis_clone_object_without_options:
+          on: [ "create" ]
+          do: [ "@dh.artis_order_empty_product_clone_feature_plugin.event_listener.admin_order_pre_create", "processOrder" ]
+          args: [ "object" ]
